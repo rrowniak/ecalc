@@ -7,7 +7,9 @@ $ cd $GOPATH/src
 $ git clone https://github.com/rrowniak/ecalc.git
 $ go build ecalc
 $ go install ecalc
-# optional tests
+```
+Optional tests can be done:
+```
 $ go test ecalc/logic
 $ go run ecalc help
 ```
@@ -33,7 +35,7 @@ $ ecalc ohm 13.7V 2k2
 The above examples are self-explanatory.
 ###### Voltage divider
 Consider a simple voltage divider that consist of input voltage (vin), output voltage (vout)
-and two resistors (r1, r2). You can refferf to [Wiki](https://en.wikipedia.org/wiki/Voltage_divider). Having these three known quantities, the calculator will calculate remaining unknown quantity.
+and two resistors (r1, r2). You can refferr to [Wiki](https://en.wikipedia.org/wiki/Voltage_divider). Having any of these three known quantities, the calculator will calculate remaining forth unknown quantity.
 Examles:
 ```
 $ ecalc vdiv -vin=12V -r1=1k -r2=2k
@@ -48,3 +50,4 @@ r1 = 85.83 kΩ (85833.333333 Ω)
 ###### E series (resistors)
 More details on E series can be found [here](https://en.wikipedia.org/wiki/E_series_of_preferred_numbers)
 For any given value calculator will find out the closest match.
+This feature to be added soon.
