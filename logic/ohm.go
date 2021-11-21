@@ -8,7 +8,12 @@ import (
 
 func Ohm_help() {
 	fmt.Println("Ohm's law calculator.")
-	fmt.Println("Uasge: " + os.Args[0] + " ohm val1 val2")
+	fmt.Println()
+	fmt.Println("usage: " + os.Args[0] + " ohm VAL1 VAL2")
+	fmt.Println()
+	fmt.Println("VALs may represent current, voltage or resistance in any order.")
+	fmt.Println("For two provided quantities the third one will be calculated.")
+	fmt.Println()
 	fmt.Println("Example: " + os.Args[0] + " ohm 10.6V 60mA")
 	fmt.Println("Example: " + os.Args[0] + " ohm 2k5 81.60uA")
 	fmt.Println("Example: " + os.Args[0] + " ohm 200R 5V")
@@ -29,7 +34,7 @@ func Ohm_exec(a, b string) {
 func calc(args []string) (Val, Val, error) {
 	var I, V, R, W Val
 	W.u = U_W
-	var i, r bool
+	var i, r, v bool
 
 	for _, arg := range args {
 		val, e := ParseQuantity(arg)
@@ -44,6 +49,7 @@ func calc(args []string) (Val, Val, error) {
 			i = true
 		case U_V:
 			V = val
+			v = true
 		case U_Ohm:
 			R = val
 			r = true
@@ -51,6 +57,22 @@ func calc(args []string) (Val, Val, error) {
 			R = val
 			r = true
 		}
+	}
+
+	// check arguments correctness
+	cnt := 0
+	if r {
+		cnt++
+	}
+	if i {
+		cnt++
+	}
+	if v {
+		cnt++
+	}
+
+	if cnt != 2 {
+		return I, W, errors.New("expected only two different quantities")
 	}
 
 	if !r {
