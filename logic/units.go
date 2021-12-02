@@ -16,6 +16,10 @@ const (
 	U_V
 	U_A
 	U_W
+	U_Db
+	U_Hz
+	U_H
+	U_F
 )
 
 func (u UnitSymbol) ToString() string {
@@ -30,6 +34,14 @@ func (u UnitSymbol) ToString() string {
 		return "V"
 	case U_W:
 		return "W"
+	case U_Db:
+		return "dB"
+	case U_Hz:
+		return "Hz"
+	case U_H:
+		return "H"
+	case U_F:
+		return "F"
 	}
 	return "unknown"
 }
@@ -46,6 +58,14 @@ func (u UnitSymbol) ToStringLong() string {
 		return "Volt"
 	case U_W:
 		return "Watt"
+	case U_Db:
+		return "Decibel"
+	case U_Hz:
+		return "Hertz"
+	case U_H:
+		return "Henr"
+	case U_F:
+		return "Farad"
 	}
 	return "unknown"
 }
@@ -62,6 +82,14 @@ func ParseUnitSymbol(s string) UnitSymbol {
 		return U_V
 	case "W":
 		return U_W
+	case "dB":
+		return U_Db
+	case "Hz":
+		return U_Hz
+	case "H":
+		return U_H
+	case "F":
+		return U_F
 	}
 	return U_unknown
 }
@@ -103,6 +131,10 @@ func (quantity Val) ToString() string {
 	if len(pref_s) > 0 {
 		v := quantity.v / pref_v
 		return fmt.Sprintf("%.2f %s%s", v, pref_s, quantity.u.ToString())
+	}
+
+	if quantity.u == U_undefined {
+		return fmt.Sprintf("%.2f", quantity.v)
 	}
 
 	return fmt.Sprintf("%.2f %s", quantity.v, quantity.u.ToString())
