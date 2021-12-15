@@ -15,9 +15,8 @@ func Db_help() {
     fmt.Println("Example: " + os.Args[0] + " db 1 10")
 }
 
-func db_calc(args []string) (Val, Val, error) {
-    var pow, ampl, val, ref Val
-    var e error
+func db_calc(args []string) (pow, ampl Val, e error) {
+    var val, ref Val
 
     if len(args) < 2 {
         return pow, ampl, errors.New("two values expected")
