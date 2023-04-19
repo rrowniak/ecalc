@@ -1,27 +1,27 @@
-# ecalc
-A simple command line calculator for electronics that ease the most common calculations.
+# Electronics Calculator
+This is a command-line calculator written in Go that simplifies the most common calculations for electronics.
+
 ## Building
-The calculator is written in Go. Download and build process is as simple as:
+To download and build the calculator, follow these simple steps:
 ```
 $ cd $GOPATH/src
 $ git clone https://github.com/rrowniak/ecalc.git
 $ go build ecalc
 $ go install ecalc
 ```
-Optional tests can be done:
+You can also run optional tests by executing:
 ```
 $ go test ecalc/logic
 $ go run ecalc help
 ```
 ## Usage
 ###### Help
-Get basic help:
+Get basic help by running:
 ```
 $ ecalc help
 ```
 ###### Ohm's law
-Calculate current, voltage or resistance according to [the Ohm's law](https://en.wikipedia.org/wiki/Ohm%27s_law).
-Examples:
+Calculate current, voltage, or resistance according to [Ohm's Law](https://en.wikipedia.org/wiki/Ohm%27s_law). Here are some examples:
 ```
 $ ecalc ohm 1A 1V
 1.00 Ω (1.000000 Ω), power 1.00 W
@@ -32,11 +32,8 @@ $ ecalc ohm 5V 13mA
 $ ecalc ohm 13.7V 2k2
 6.23 mA (0.006227 A), power 85.31 mW
 ```
-The above examples are self-explanatory.
 ###### Voltage divider
-Consider a simple voltage divider that consist of input voltage (vin), output voltage (vout)
-and two resistors (r1, r2). You can refferr to [Wiki](https://en.wikipedia.org/wiki/Voltage_divider). Having any of these three known quantities, the calculator will calculate remaining forth unknown quantity.
-Examles:
+Calculate the output voltage (vout), input voltage (vin), or resistor values (r1, r2) for a simple voltage divider circuit. You can refer to the [Wiki](https://en.wikipedia.org/wiki/Voltage_divider) for more information. Here are some examples:
 ```
 $ ecalc vdiv -vin=12V -r1=1k -r2=2k
 vout = 8.00 V (8.000000 V)
@@ -48,10 +45,7 @@ $ ecalc vdiv -vin=230V -vout=24V -r2=10k
 r1 = 85.83 kΩ (85833.333333 Ω)
 ```
 ###### LC resonant calculator
-Privide two quantities (frequency, capacitance or inductance) and the third one will be calculated.
-More about LC circuit [here](https://en.wikipedia.org/wiki/LC_circuit)
-
-Examples:
+Provide two quantities (frequency, capacitance, or inductance) and the third one will be calculated. You can learn more about LC circuits [here](https://en.wikipedia.org/wiki/LC_circuit). Here are some examples:
 ```
 $ ecalc lc 10pF 33uH
 8.76 MHz (8761191.269246 Hz)
@@ -64,19 +58,13 @@ $ ecalc lc 1MHz 10uH
 ```
 
 ###### Reactance calculator
-Privide two quantites out of frequency, capacitance, inductance or reactance.
-[Wiki page](https://en.wikipedia.org/wiki/Electrical_reactance).
-
-Examples:
+Provide two quantities out of frequency, capacitance, inductance, or reactance. You can find more information on the [Wiki page](https://en.wikipedia.org/wiki/Electrical_reactance). Here are some examples:
 ```
 ecalc react 1kHz 1uF
 ```
 
 ###### dB (decibell) calculator
-Provide two scalars and the caclulator will provide the ratio in dB.
-[Wiki page](https://en.wikipedia.org/wiki/Decibel).
-
-Examples:
+Provide two scalars and the calculator will provide the ratio in dB. You can learn more on the [Wiki page](https://en.wikipedia.org/wiki/Decibel). Here are some examples:
 ```
 $ ecalc db 10 998,7
 Power ratio:     -19.99 dB (-19.994350 dB)
@@ -84,10 +72,7 @@ Amplitude ratio: -39.99 dB (-39.988701 dB)
 ```
 
 ###### E series (resistors)
-More details on E series can be found [here](https://en.wikipedia.org/wiki/E_series_of_preferred_numbers)
-For any given value calculator will find out the closest match.
-
-Examples:
+For any given value, the calculator will find the closest match in the E series of resistors. You can find more details about the E series [here](https://en.wikipedia.org/wiki/E_series_of_preferred_numbers). Here are some examples:
 ```
 $ ecalc eseries 7.482kR
 Closest match to 7482.000000 in series E3 (tolerance 40.0%):
