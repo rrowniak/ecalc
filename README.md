@@ -97,3 +97,37 @@ Closest match to 7482.000000 in series E128 (tolerance 0.5%):
         lower boundary: 7.41 (7.41 kΩ), error: 1.0%, diff: 72.00 Ω
         upper boundary: 7.50 (7.50 kΩ), error: 0.2%, diff: 18.00 Ω
 ```
+
+###### Wire resistance and voltage drop
+Calculate the resistance of a copper wire and the maximum current at 1%, 5%, 10%, and 20% voltage drop. The wire can be specified by diameter, cross-section (mm2), or AWG gauge. Practical ampacity estimates are also shown. Arguments are order-independent. Here are some examples:
+```
+$ ecalc wire 12V 1.5mm 60cm
+Resistance: 5.85 mΩ (0.005854 Ω)
+Practical ampacity (power wiring): ~7.07 A
+Practical ampacity (chassis wiring): ~17.67 A
+
+  @ 1% drop: 20.50 A (V_drop 120.00 mV, 2.46 W)
+  @ 5% drop: 102.50 A (V_drop 600.00 mV, 61.50 W)
+  @ 10% drop: 205.01 A (V_drop 1.20 V, 246.01 W)
+  @ 20% drop: 410.01 A (V_drop 2.40 V, 984.03 W)
+
+$ ecalc wire 230V 2.5 100m
+Resistance: 689.60 mΩ (0.689600 Ω)
+Practical ampacity (power wiring): ~10.00 A
+Practical ampacity (chassis wiring): ~25.00 A
+
+  @ 1% drop: 3.34 A (V_drop 2.30 V, 7.67 W)
+  @ 5% drop: 16.68 A (V_drop 11.50 V, 191.78 W)
+  @ 10% drop: 33.35 A (V_drop 23.00 V, 767.11 W)
+  @ 20% drop: 66.71 A (V_drop 46.00 V, 3.07 kW)
+
+$ ecalc wire 12V 14AWG 100ft
+Resistance: 252.52 mΩ (0.252522 Ω)
+Practical ampacity (power wiring): ~8.32 A
+Practical ampacity (chassis wiring): ~20.81 A
+
+  @ 1% drop: 475.21 mA (V_drop 120.00 mV, 57.02 mW)
+  @ 5% drop: 2.38 A (V_drop 600.00 mV, 1.43 W)
+  @ 10% drop: 4.75 A (V_drop 1.20 V, 5.70 W)
+  @ 20% drop: 9.50 A (V_drop 2.40 V, 22.81 W)
+```
