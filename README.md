@@ -1,5 +1,5 @@
 # Electronics Calculator
-This is a command-line calculator written in Go that simplifies the most common calculations for electronics.
+This is a command-line calculator written in Go that simplifies common electronics calculations.
 
 ## Building
 To download and build the calculator, follow these simple steps:
@@ -58,12 +58,12 @@ $ ecalc lc 1MHz 10uH
 ```
 
 ###### Reactance calculator
-Provide two quantities out of frequency, capacitance, inductance, or reactance. You can find more information on the [Wiki page](https://en.wikipedia.org/wiki/Electrical_reactance). Here are some examples:
+Provide two of the following: frequency, capacitance, inductance, or reactance. You can find more information on the [Wiki page](https://en.wikipedia.org/wiki/Electrical_reactance). Here are some examples:
 ```
 ecalc react 1kHz 1uF
 ```
 
-###### dB (decibell) calculator
+###### dB (decibel) calculator
 Provide two scalars and the calculator will provide the ratio in dB. You can learn more on the [Wiki page](https://en.wikipedia.org/wiki/Decibel). Here are some examples:
 ```
 $ ecalc db 10 998,7

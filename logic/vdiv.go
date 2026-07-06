@@ -15,9 +15,9 @@ func Vdiv_help() {
     fmt.Println("Arguments:")
     fmt.Println("\t-vin=val\tInput voltage")
     fmt.Println("\t-vout=val\tOutput voltage")
-    fmt.Println("\t-r1=val\t\tRezistor R1 (Z1)")
-    fmt.Println("\t-r2=val\t\tRezistor R2 (Z2)")
-    fmt.Println("For these three provided quantities the forth one will be calculated.")
+    fmt.Println("\t-r1=val\t\tResistor R1 (Z1)")
+    fmt.Println("\t-r2=val\t\tResistor R2 (Z2)")
+    fmt.Println("For three provided quantities the fourth one will be calculated.")
     fmt.Println()
     fmt.Println("Example: " + os.Args[0] + " vdiv -vin=10.0V -vout=1V -r1=1kR")
 }
@@ -102,7 +102,7 @@ func parse_quant(s string, v *Val, cnt *int, u UnitSymbol) {
     }
 
     if v.u == U_Ohm && (v.v <= 0 || Zero(v.v)) {
-        fmt.Printf("Zero or negative resistance '%s' does't make any sense\n", s)
+        fmt.Printf("Zero or negative resistance '%s' does not make sense\n", s)
         os.Exit(1)
     }
 

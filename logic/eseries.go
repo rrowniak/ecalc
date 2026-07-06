@@ -55,7 +55,7 @@ type ESeries struct {
 func (s ESeries) Calc(v float64) (float64, int, float64, int, error) {
 
     if v < 0 || Zero(v) {
-        return 0, 0, 0, 0, errors.New("value can't be negative nor zero")
+        return 0, 0, 0, 0, errors.New("value cannot be negative or zero")
     }
 
     m, n := sci_norm(v)
@@ -75,7 +75,7 @@ func (s ESeries) Calc(v float64) (float64, int, float64, int, error) {
         }
     }
 
-    return 0, 0, 0, 0, errors.New("eseries.calc: we shouldn't be there")
+    return 0, 0, 0, 0, errors.New("eseries.calc: unexpected state")
 }
 
 func sci_norm(v float64) (float64, int) {

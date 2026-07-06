@@ -8,7 +8,7 @@ import (
 )
 
 func Db_help() {
-    fmt.Println("Ddecibel calculator that calculates the ratio of a value to a fixed reference value")
+    fmt.Println("Decibel calculator that calculates the ratio of a value to a fixed reference value")
     fmt.Println()
     fmt.Println("usage: " + os.Args[0] + " db VAL REF_VAL")
     fmt.Println()

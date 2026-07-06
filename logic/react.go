@@ -8,7 +8,7 @@ import (
 func React_help() {
     fmt.Println("Electrical reactance calculator.")
     fmt.Println()
-    fmt.Println("usage: " + os.Args[0] + " react VAL1 VAl2")
+    fmt.Println("usage: " + os.Args[0] + " react VAL1 VAL2")
     fmt.Println()
     fmt.Println("VALs may represent the following combinations:")
     fmt.Printf("\t* frequency [Hz] AND capacitance [F], inductance [H],")

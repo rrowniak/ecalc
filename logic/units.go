@@ -63,7 +63,7 @@ func (u UnitSymbol) ToStringLong() string {
     case U_Hz:
         return "Hertz"
     case U_H:
-        return "Henr"
+        return "Henry"
     case U_F:
         return "Farad"
     }
