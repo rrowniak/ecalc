@@ -59,9 +59,9 @@ func init() {
 		help_fun:      logic.Eseries_help,
 		exec_fun:      logic.Eseries_exec})
 
-	commands = append(commands, Command{name: "wire",
-		description:   "Wire resistance and voltage drop calculator",
-		min_args_exec: 3,
+    commands = append(commands, Command{name: "wire",
+        description:   "Wire resistance calculator",
+        min_args_exec: 2,
 		help_fun:      logic.Wire_help,
 		exec_fun:      logic.Wire_exec})
 }

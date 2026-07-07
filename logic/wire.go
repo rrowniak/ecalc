@@ -29,10 +29,10 @@ var lengthUnits = []lengthUnit{
 type parsedArg int
 
 const (
-    paVoltage parsedArg = iota
-    paAWG
+    paAWG parsedArg = iota
     paCrossSection
     paLength
+    paCurrent
 )
 
 type parsedValue struct {
@@ -41,25 +41,25 @@ type parsedValue struct {
 }
 
 func Wire_help() {
-    fmt.Println("Wire resistance and voltage drop calculator.")
+    fmt.Println("Wire resistance calculator.")
     fmt.Println()
-    fmt.Println("usage: " + os.Args[0] + " wire VOLTAGE WIRE_SPEC LENGTH")
+    fmt.Println("usage: " + os.Args[0] + " wire WIRE_SPEC LENGTH [CURRENT]")
     fmt.Println()
     fmt.Println("Arguments may be in any order. WIRE_SPEC can be:")
     fmt.Println("  diameter (e.g. 1.5mm, 0.8mm)")
     fmt.Println("  cross-section (e.g. 2.5mm2, 1.5)")
     fmt.Println("  AWG gauge (e.g. 14AWG, 20AWG)")
     fmt.Println("LENGTH examples: 60cm, 10m, 2km, 100ft")
-    fmt.Println()
-    fmt.Println("Voltage examples: 12V, 230V, 5V")
+    fmt.Println("CURRENT (optional): specify as 5A, 10A, 2.5A, etc.")
     fmt.Println()
     fmt.Println("Practical ampacity estimates:")
     fmt.Println("  power wiring   ~4 A/mm²  (bundled or in conduit, poor heat dissipation)")
     fmt.Println("  chassis wiring ~10 A/mm² (single wire in open air, good heat dissipation)")
     fmt.Println()
-    fmt.Println("Example: " + os.Args[0] + " wire 12V 1.5mm 60cm")
-    fmt.Println("Example: " + os.Args[0] + " wire 230V 2.5 100m")
-    fmt.Println("Example: " + os.Args[0] + " wire 12V 14AWG 100ft")
+    fmt.Println("Example: " + os.Args[0] + " wire 1.5mm 60cm")
+    fmt.Println("Example: " + os.Args[0] + " wire 2.5 100m")
+    fmt.Println("Example: " + os.Args[0] + " wire 14AWG 100ft")
+    fmt.Println("Example: " + os.Args[0] + " wire 2.5mm2 10m 5A")
 }
 
 func awgToMm2(awg float64) float64 {
@@ -73,28 +73,16 @@ func diameterToMm2(diameterM float64) float64 {
 }
 
 func mm2ToDiameterMm(aMm2 float64) float64 {
-    return 2 * math.Sqrt(aMm2/math.Pi)
+    return 2 * math.Sqrt(aMm2 / math.Pi)
 }
 
 func resistanceOhm(crossSectionMm2, lengthM float64) float64 {
     return copperRho * lengthM / (crossSectionMm2 * 1e-6)
 }
 
-func calcDrop(voltageV, resistanceOhm float64, dropPerc float64) DropInfo {
-    v := voltageV * (dropPerc / 100.0)
-    i := v / resistanceOhm
-    p := v * i
-    return DropInfo{VDropV: v, I: i, P: p}
-}
-
 func parseWireArg(s string) (parsedValue, error) {
     if len(s) == 0 {
         return parsedValue{}, errors.New("empty string")
-    }
-
-    v, err := ParseQuantity(s)
-    if err == nil && v.u == U_V {
-        return parsedValue{typ: paVoltage, value: v.v}, nil
     }
 
     upper := strings.ToUpper(s)
@@ -138,6 +126,18 @@ func parseWireArg(s string) (parsedValue, error) {
         }
     }
 
+    if strings.HasSuffix(upper, "A") {
+        numStr := strings.TrimSpace(s[:len(s)-1])
+        val, err := strconv.ParseFloat(numStr, 64)
+        if err != nil {
+            return parsedValue{}, errors.New("invalid current value: " + numStr)
+        }
+        if val <= 0 {
+            return parsedValue{}, errors.New("current must be positive")
+        }
+        return parsedValue{typ: paCurrent, value: val}, nil
+    }
+
     val, err := strconv.ParseFloat(s, 64)
     if err != nil {
         return parsedValue{}, errors.New("unable to parse: " + s)
@@ -148,31 +148,22 @@ func parseWireArg(s string) (parsedValue, error) {
     return parsedValue{typ: paCrossSection, value: val}, nil
 }
 
-type DropInfo struct {
-    VDropV float64
-    I      float64
-    P      float64
-}
-
 type WireCalcResult struct {
     ResistanceOhm   float64
     CrossSectionMm2 float64
     DiameterMm      float64
-    D1              DropInfo
-    D5              DropInfo
-    D10             DropInfo
-    D20             DropInfo
+    CurrentA        float64
 }
 
 func WireCalc(args []string) (WireCalcResult, error) {
     var result WireCalcResult
 
-    if len(args) < 3 {
-        return result, errors.New("three arguments expected: voltage, wire spec, and length")
+    if len(args) < 2 {
+        return result, errors.New("two arguments expected: wire spec and length")
     }
 
-    var voltage, crossSectionMm2, lengthM float64
-    var hasVoltage, hasWireSpec, hasLength bool
+    var crossSectionMm2, lengthM float64
+    var hasWireSpec, hasLength, hasCurrent bool
     var lengthValues []float64
 
     for _, arg := range args {
@@ -182,12 +173,6 @@ func WireCalc(args []string) (WireCalcResult, error) {
         }
 
         switch pv.typ {
-        case paVoltage:
-            if hasVoltage {
-                return result, errors.New("multiple voltage values provided")
-            }
-            voltage = pv.value
-            hasVoltage = true
         case paAWG:
             if hasWireSpec {
                 return result, errors.New("multiple wire specifications provided")
@@ -202,6 +187,12 @@ func WireCalc(args []string) (WireCalcResult, error) {
             hasWireSpec = true
         case paLength:
             lengthValues = append(lengthValues, pv.value)
+        case paCurrent:
+            if hasCurrent {
+                return result, errors.New("multiple current values provided")
+            }
+            result.CurrentA = pv.value
+            hasCurrent = true
         }
     }
 
@@ -228,9 +219,6 @@ func WireCalc(args []string) (WireCalcResult, error) {
         return result, errors.New("too many length-like values")
     }
 
-    if !hasVoltage {
-        return result, errors.New("no voltage provided")
-    }
     if !hasWireSpec {
         return result, errors.New("no wire specification provided (diameter, cross-section, or AWG)")
     }
@@ -243,10 +231,6 @@ func WireCalc(args []string) (WireCalcResult, error) {
     result.ResistanceOhm = r
     result.CrossSectionMm2 = crossSectionMm2
     result.DiameterMm = mm2ToDiameterMm(crossSectionMm2)
-    result.D1 = calcDrop(voltage, r, 1)
-    result.D5 = calcDrop(voltage, r, 5)
-    result.D10 = calcDrop(voltage, r, 10)
-    result.D20 = calcDrop(voltage, r, 20)
 
     return result, nil
 }
@@ -263,25 +247,29 @@ func Wire_exec(args []string) {
 
     rVal := Val{v: result.ResistanceOhm, u: U_Ohm}
     fmt.Printf("Resistance: %s (%f %s)\n", rVal.ToString(), result.ResistanceOhm, rVal.u.ToString())
-    fmt.Printf("Cross-section: %.2f mm², diameter: %.2f mm\n",
+    fmt.Printf("Cross-section: %.2f mm\u00b2, diameter: %.2f mm\n",
         result.CrossSectionMm2, result.DiameterMm)
 
-    fmt.Printf("Practical ampacity (power wiring): ~%s\n",
-        Val{v: ampacityPower(result.CrossSectionMm2), u: U_A}.ToString())
-    fmt.Printf("Practical ampacity (chassis wiring): ~%s\n",
-        Val{v: ampacityChassis(result.CrossSectionMm2), u: U_A}.ToString())
-    fmt.Println()
+    aPower := ampacityPower(result.CrossSectionMm2)
+    aChassis := ampacityChassis(result.CrossSectionMm2)
 
-    printDropLine(1, result.D1)
-    printDropLine(5, result.D5)
-    printDropLine(10, result.D10)
-    printDropLine(20, result.D20)
-}
+    printAmpacity := func(a float64, label string) {
+        vd := a * result.ResistanceOhm
+        w := a * a * result.ResistanceOhm
+        fmt.Printf("Practical ampacity (%s): ~%s (V_drop %s, dissipation %s)\n",
+            label, Val{v: a, u: U_A}.ToString(),
+            Val{v: vd, u: U_V}.ToString(),
+            Val{v: w, u: U_W}.ToString())
+    }
+    printAmpacity(aPower, "power wiring")
+    printAmpacity(aChassis, "chassis wiring")
 
-func printDropLine(dropPerc int, d DropInfo) {
-    cVal := Val{v: d.I, u: U_A}
-    vVal := Val{v: d.VDropV, u: U_V}
-    pVal := Val{v: d.P, u: U_W}
-    fmt.Printf("  @ %d%% drop: %s (V_drop %s, %s)\n", dropPerc,
-        cVal.ToString(), vVal.ToString(), pVal.ToString())
+    if result.CurrentA > 0 {
+        vd := result.CurrentA * result.ResistanceOhm
+        w := result.CurrentA * result.CurrentA * result.ResistanceOhm
+        fmt.Printf("At %s: V_drop %s, dissipation %s\n",
+            Val{v: result.CurrentA, u: U_A}.ToString(),
+            Val{v: vd, u: U_V}.ToString(),
+            Val{v: w, u: U_W}.ToString())
+    }
 }

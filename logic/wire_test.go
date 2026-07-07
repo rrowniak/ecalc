@@ -9,26 +9,6 @@ func almostEqual(a, b, eps float64) bool {
     return math.Abs(a-b) <= eps
 }
 
-func TestWireParseVoltage(t *testing.T) {
-    pv, err := parseWireArg("12V")
-    if err != nil {
-        t.Fatal("unexpected error:", err)
-    }
-    if pv.typ != paVoltage || pv.value != 12.0 {
-        t.Errorf("expected voltage 12V, got type=%d val=%f", pv.typ, pv.value)
-    }
-}
-
-func TestWireParseVoltageDecimal(t *testing.T) {
-    pv, err := parseWireArg("5.5V")
-    if err != nil {
-        t.Fatal("unexpected error:", err)
-    }
-    if pv.typ != paVoltage || pv.value != 5.5 {
-        t.Errorf("expected voltage 5.5V, got type=%d val=%f", pv.typ, pv.value)
-    }
-}
-
 func TestWireParseAWG(t *testing.T) {
     pv, err := parseWireArg("14AWG")
     if err != nil {
@@ -160,36 +140,70 @@ func TestWireParseNonNumericAWG(t *testing.T) {
     }
 }
 
+func TestWireParseCurrent(t *testing.T) {
+    pv, err := parseWireArg("5A")
+    if err != nil {
+        t.Fatal("unexpected error:", err)
+    }
+    if pv.typ != paCurrent || pv.value != 5.0 {
+        t.Errorf("expected current 5A, got type=%d val=%f", pv.typ, pv.value)
+    }
+}
+
+func TestWireParseCurrentDecimal(t *testing.T) {
+    pv, err := parseWireArg("2.5A")
+    if err != nil {
+        t.Fatal("unexpected error:", err)
+    }
+    if pv.typ != paCurrent || pv.value != 2.5 {
+        t.Errorf("expected current 2.5A, got type=%d val=%f", pv.typ, pv.value)
+    }
+}
+
+func TestWireParseCurrentNegative(t *testing.T) {
+    _, err := parseWireArg("-5A")
+    if err == nil {
+        t.Error("expected error for negative current")
+    }
+}
+
+func TestWireParseCurrentNonNumeric(t *testing.T) {
+    _, err := parseWireArg("abcA")
+    if err == nil {
+        t.Error("expected error for non-numeric current")
+    }
+}
+
 func TestAWG14ToMm2(t *testing.T) {
     mm2 := awgToMm2(14)
     if !almostEqual(mm2, 2.08, 0.01) {
-        t.Errorf("AWG 14 expected ~2.08 mm², got %f", mm2)
+        t.Errorf("AWG 14 expected ~2.08 mm\u00b2, got %f", mm2)
     }
 }
 
 func TestAWG20ToMm2(t *testing.T) {
     mm2 := awgToMm2(20)
     if !almostEqual(mm2, 0.518, 0.01) {
-        t.Errorf("AWG 20 expected ~0.518 mm², got %f", mm2)
+        t.Errorf("AWG 20 expected ~0.518 mm\u00b2, got %f", mm2)
     }
 }
 
 func TestDiameterToMm2(t *testing.T) {
     mm2 := diameterToMm2(0.0015)
     if !almostEqual(mm2, 1.767, 0.001) {
-        t.Errorf("1.5mm diameter expected ~1.767 mm², got %f", mm2)
+        t.Errorf("1.5mm diameter expected ~1.767 mm\u00b2, got %f", mm2)
     }
 }
 
 func TestResistanceOhm(t *testing.T) {
     r := resistanceOhm(2.5, 100)
     if !almostEqual(r, 0.6896, 0.001) {
-        t.Errorf("2.5mm² 100m expected ~0.6896 Ω, got %f", r)
+        t.Errorf("2.5mm\u00b2 100m expected ~0.6896 \u03a9, got %f", r)
     }
 }
 
 func TestWireCalcCrossSection(t *testing.T) {
-    result, err := WireCalc([]string{"12V", "2.5", "100m"})
+    result, err := WireCalc([]string{"2.5", "100m"})
     if err != nil {
         t.Fatal("unexpected error:", err)
     }
@@ -199,30 +213,13 @@ func TestWireCalcCrossSection(t *testing.T) {
         t.Errorf("resistance expected %f, got %f", expectedR, result.ResistanceOhm)
     }
 
-    expectedI5 := 12.0 * 0.05 / expectedR
-    if !almostEqual(result.D5.I, expectedI5, 0.01) {
-        t.Errorf("current@5%% expected %f, got %f", expectedI5, result.D5.I)
-    }
-
-    expectedI10 := 12.0 * 0.10 / expectedR
-    if !almostEqual(result.D10.I, expectedI10, 0.01) {
-        t.Errorf("current@10%% expected %f, got %f", expectedI10, result.D10.I)
-    }
-
-    expectedI20 := 12.0 * 0.20 / expectedR
-    if !almostEqual(result.D20.I, expectedI20, 0.01) {
-        t.Errorf("current@20%% expected %f, got %f", expectedI20, result.D20.I)
-    }
-
-    expectedV5 := 12.0 * 0.05
-    expectedP5 := expectedV5 * expectedI5
-    if !almostEqual(result.D5.P, expectedP5, 0.01) {
-        t.Errorf("power@5%% expected %f, got %f", expectedP5, result.D5.P)
+    if !almostEqual(result.CrossSectionMm2, 2.5, 0.001) {
+        t.Errorf("cross-section expected 2.5, got %f", result.CrossSectionMm2)
     }
 }
 
 func TestWireCalcMm2WithUnit(t *testing.T) {
-    result, err := WireCalc([]string{"2.5mm2", "12V", "10m"})
+    result, err := WireCalc([]string{"2.5mm2", "10m"})
     if err != nil {
         t.Fatal("unexpected error:", err)
     }
@@ -234,7 +231,7 @@ func TestWireCalcMm2WithUnit(t *testing.T) {
 }
 
 func TestWireCalcDiameter(t *testing.T) {
-    result, err := WireCalc([]string{"12V", "1.5mm", "60cm"})
+    result, err := WireCalc([]string{"1.5mm", "60cm"})
     if err != nil {
         t.Fatal("unexpected error:", err)
     }
@@ -247,7 +244,7 @@ func TestWireCalcDiameter(t *testing.T) {
 }
 
 func TestWireCalcDiameterReversedOrder(t *testing.T) {
-    result, err := WireCalc([]string{"60cm", "12V", "1.5mm"})
+    result, err := WireCalc([]string{"60cm", "1.5mm"})
     if err != nil {
         t.Fatal("unexpected error:", err)
     }
@@ -260,7 +257,7 @@ func TestWireCalcDiameterReversedOrder(t *testing.T) {
 }
 
 func TestWireCalcAWG(t *testing.T) {
-    result, err := WireCalc([]string{"12V", "14AWG", "100ft"})
+    result, err := WireCalc([]string{"14AWG", "100ft"})
     if err != nil {
         t.Fatal("unexpected error:", err)
     }
@@ -273,50 +270,78 @@ func TestWireCalcAWG(t *testing.T) {
 }
 
 func TestWireCalcMissingArgs(t *testing.T) {
-    _, err := WireCalc([]string{"12V", "1.5mm"})
+    _, err := WireCalc([]string{"1.5mm"})
     if err == nil {
         t.Error("expected error for missing args")
     }
 }
 
-func TestWireCalcNoVoltage(t *testing.T) {
-    _, err := WireCalc([]string{"1.5mm", "60cm"})
-    if err == nil {
-        t.Error("expected error for missing voltage")
-    }
-}
-
 func TestWireCalcNoWireSpec(t *testing.T) {
-    _, err := WireCalc([]string{"12V", "60cm"})
+    _, err := WireCalc([]string{"60cm"})
     if err == nil {
         t.Error("expected error for missing wire spec")
     }
 }
 
 func TestWireCalcNoLength(t *testing.T) {
-    _, err := WireCalc([]string{"12V", "2.5mm2"})
+    _, err := WireCalc([]string{"2.5mm2"})
     if err == nil {
         t.Error("expected error for missing length")
     }
 }
 
-func TestWireCalcMultipleVoltage(t *testing.T) {
-    _, err := WireCalc([]string{"12V", "5V", "2.5mm2", "10m"})
-    if err == nil {
-        t.Error("expected error for multiple voltages")
-    }
-}
-
 func TestWireCalcMultipleWireSpec(t *testing.T) {
-    _, err := WireCalc([]string{"12V", "2.5mm2", "1.5mm", "10m"})
+    _, err := WireCalc([]string{"2.5mm2", "1.5mm", "10m"})
     if err == nil {
         t.Error("expected error for multiple wire specs")
     }
 }
 
+func TestWireCalcWithCurrent(t *testing.T) {
+    result, err := WireCalc([]string{"2.5mm2", "10m", "5A"})
+    if err != nil {
+        t.Fatal("unexpected error:", err)
+    }
+    if !almostEqual(result.CurrentA, 5.0, 0.001) {
+        t.Errorf("current expected 5A, got %f", result.CurrentA)
+    }
+    expectedR := 0.06896
+    if !almostEqual(result.ResistanceOhm, expectedR, 0.001) {
+        t.Errorf("resistance expected %f, got %f", expectedR, result.ResistanceOhm)
+    }
+}
+
+func TestWireCalcWithCurrentReversed(t *testing.T) {
+    result, err := WireCalc([]string{"5A", "10m", "2.5mm2"})
+    if err != nil {
+        t.Fatal("unexpected error:", err)
+    }
+    if !almostEqual(result.CurrentA, 5.0, 0.001) {
+        t.Errorf("current expected 5A, got %f", result.CurrentA)
+    }
+    expectedR := 0.06896
+    if !almostEqual(result.ResistanceOhm, expectedR, 0.001) {
+        t.Errorf("resistance expected %f, got %f", expectedR, result.ResistanceOhm)
+    }
+}
+
+func TestWireCalcMultipleCurrent(t *testing.T) {
+    _, err := WireCalc([]string{"2.5mm2", "10m", "5A", "2A"})
+    if err == nil {
+        t.Error("expected error for multiple current values")
+    }
+}
+
 func TestWireCalcNegativeCrossSection(t *testing.T) {
-    _, err := WireCalc([]string{"12V", "-2.5", "10m"})
+    _, err := WireCalc([]string{"-2.5", "10m"})
     if err == nil {
         t.Error("expected error for negative cross-section")
+    }
+}
+
+func TestMm2ToDiameterMm(t *testing.T) {
+    d := mm2ToDiameterMm(1.767)
+    if !almostEqual(d, 1.5, 0.01) {
+        t.Errorf("1.767 mm\u00b2 expected ~1.5 mm diameter, got %f", d)
     }
 }

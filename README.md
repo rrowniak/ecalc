@@ -98,36 +98,31 @@ Closest match to 7482.000000 in series E128 (tolerance 0.5%):
         upper boundary: 7.50 (7.50 kΩ), error: 0.2%, diff: 18.00 Ω
 ```
 
-###### Wire resistance and voltage drop
-Calculate the resistance of a copper wire and the maximum current at 1%, 5%, 10%, and 20% voltage drop. The wire can be specified by diameter, cross-section (mm2), or AWG gauge. Practical ampacity estimates are also shown. Arguments are order-independent. Here are some examples:
+###### Wire resistance
+Calculate the resistance of a copper wire given its diameter, cross-section, or AWG gauge and length. Practical ampacity estimates with voltage drop and dissipation are shown. An optional current (e.g. 5A) can be specified for load-specific V_drop and dissipation. Arguments are order-independent. Here are some examples:
 ```
-$ ecalc wire 12V 1.5mm 60cm
+$ ecalc wire 1.5mm 60cm
 Resistance: 5.85 mΩ (0.005854 Ω)
-Practical ampacity (power wiring): ~7.07 A
-Practical ampacity (chassis wiring): ~17.67 A
+Cross-section: 1.77 mm², diameter: 1.50 mm
+Practical ampacity (power wiring): ~7.07 A (V_drop 41.38 mV, dissipation 292.47 mW)
+Practical ampacity (chassis wiring): ~17.67 A (V_drop 103.44 mV, dissipation 1.83 W)
 
-  @ 1% drop: 20.50 A (V_drop 120.00 mV, 2.46 W)
-  @ 5% drop: 102.50 A (V_drop 600.00 mV, 61.50 W)
-  @ 10% drop: 205.01 A (V_drop 1.20 V, 246.01 W)
-  @ 20% drop: 410.01 A (V_drop 2.40 V, 984.03 W)
-
-$ ecalc wire 230V 2.5 100m
+$ ecalc wire 2.5 100m
 Resistance: 689.60 mΩ (0.689600 Ω)
-Practical ampacity (power wiring): ~10.00 A
-Practical ampacity (chassis wiring): ~25.00 A
+Cross-section: 2.50 mm², diameter: 1.78 mm
+Practical ampacity (power wiring): ~10.00 A (V_drop 6.90 V, dissipation 68.96 W)
+Practical ampacity (chassis wiring): ~25.00 A (V_drop 17.24 V, dissipation 431.00 W)
 
-  @ 1% drop: 3.34 A (V_drop 2.30 V, 7.67 W)
-  @ 5% drop: 16.68 A (V_drop 11.50 V, 191.78 W)
-  @ 10% drop: 33.35 A (V_drop 23.00 V, 767.11 W)
-  @ 20% drop: 66.71 A (V_drop 46.00 V, 3.07 kW)
-
-$ ecalc wire 12V 14AWG 100ft
+$ ecalc wire 14AWG 100ft
 Resistance: 252.52 mΩ (0.252522 Ω)
-Practical ampacity (power wiring): ~8.32 A
-Practical ampacity (chassis wiring): ~20.81 A
+Cross-section: 2.08 mm², diameter: 1.63 mm
+Practical ampacity (power wiring): ~8.32 A (V_drop 2.10 V, dissipation 17.47 W)
+Practical ampacity (chassis wiring): ~20.81 A (V_drop 5.25 V, dissipation 109.28 W)
 
-  @ 1% drop: 475.21 mA (V_drop 120.00 mV, 57.02 mW)
-  @ 5% drop: 2.38 A (V_drop 600.00 mV, 1.43 W)
-  @ 10% drop: 4.75 A (V_drop 1.20 V, 5.70 W)
-  @ 20% drop: 9.50 A (V_drop 2.40 V, 22.81 W)
+$ ecalc wire 2.5mm2 10m 5A
+Resistance: 68.96 mΩ (0.068960 Ω)
+Cross-section: 2.50 mm², diameter: 1.78 mm
+Practical ampacity (power wiring): ~10.00 A (V_drop 689.60 mV, dissipation 6.90 W)
+Practical ampacity (chassis wiring): ~25.00 A (V_drop 1.72 V, dissipation 43.10 W)
+At 5.00 A: V_drop 344.80 mV, dissipation 1.72 W
 ```
