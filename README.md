@@ -60,7 +60,18 @@ $ ecalc lc 1MHz 10uH
 ###### Reactance calculator
 Provide two of the following: frequency, capacitance, inductance, or reactance. You can find more information on the [Wiki page](https://en.wikipedia.org/wiki/Electrical_reactance). Here are some examples:
 ```
-ecalc react 1kHz 1uF
+$ ecalc react 1kHz 1uF
+Capacitive reactance: 159.15 Ω (159.154943 Ω)
+
+$ ecalc react 1MHz 1kR
+Inductance: 159.15 uH (0.000159 H)
+Capacitance: 159.15 pF (0.000000 F)
+
+$ ecalc react 5uH 225kHz
+Inductive reactance: 7.07 Ω (7.068583 Ω)
+
+$ ecalc react 10uH 33nF
+Resonant frequency: 277.05 kHz (277053.194272 Hz)
 ```
 
 ###### dB (decibel) calculator
