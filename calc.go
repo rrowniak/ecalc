@@ -64,6 +64,12 @@ func init() {
         min_args_exec: 2,
 		help_fun:      logic.Wire_help,
 		exec_fun:      logic.Wire_exec})
+
+    commands = append(commands, Command{name: "rcomb",
+        description:   "Resistor combination finder",
+        min_args_exec: 1,
+		help_fun:      logic.Rcomb_help,
+		exec_fun:      logic.Rcomb_exec})
 }
 
 func printHelp() {

@@ -109,6 +109,28 @@ Closest match to 7482.000000 in series E128 (tolerance 0.5%):
         upper boundary: 7.50 (7.50 kΩ), error: 0.2%, diff: 18.00 Ω
 ```
 
+###### Resistor combination finder
+Find the best combination of up to 3 resistors from a given E-series to approximate a target resistance. Topologies evaluated: single, series, parallel, 3-series, 3-parallel, (R1∥R2)+R3, (R1+R2)∥R3. Defaults to E24 if no series is specified.
+```
+$ ecalc rcomb 10k
+Top 3 combinations for 10.00 kΩ (E24):
+  1. single: 10.00 kΩ = 10.00 kΩ, diff 0.00 Ω, error 0.00%
+  2. series: 1.80 kΩ + 8.20 kΩ = 10.00 kΩ, diff 0.00 Ω, error 0.00%
+  3. parallel: 20.00 kΩ ∥ 20.00 kΩ = 10.00 kΩ, diff 0.00 Ω, error 0.00%
+
+$ ecalc rcomb 7k77
+Top 3 combinations for 7.77 kΩ (E24):
+  1. series: 270.00 Ω + 7.50 kΩ = 7.77 kΩ, diff 0.00 Ω, error 0.00%
+  2. series: 30.00 Ω + 240.00 Ω + 7.50 kΩ = 7.77 kΩ, diff 0.00 Ω, error 0.00%
+  3. parallel: 160.00 kΩ ∥ 160.00 kΩ = 80.00 kΩ, diff 72.23 kΩ, error 929.60%
+
+$ ecalc rcomb 12.3k E96
+Top 3 combinations for 12.30 kΩ (E96):
+  1. series: 1.30 kΩ + 11.00 kΩ = 12.30 kΩ, diff 0.00 Ω, error 0.00%
+  2. series: 2.10 kΩ + 10.20 kΩ = 12.30 kΩ, diff 0.00 Ω, error 0.00%
+  3. series: 5.49 kΩ + 6.81 kΩ = 12.30 kΩ, diff 0.00 Ω, error 0.00%
+```
+
 ###### Wire resistance
 Calculate the resistance of a copper wire given its diameter, cross-section, or AWG gauge and length. Practical ampacity estimates with voltage drop and dissipation are shown. An optional current (e.g. 5A) can be specified for load-specific V_drop and dissipation. Arguments are order-independent. Here are some examples:
 ```
